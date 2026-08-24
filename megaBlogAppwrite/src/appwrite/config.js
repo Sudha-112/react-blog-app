@@ -109,11 +109,11 @@ export class Service{
     //file upload service
     async uploadFile(file){
         try{
-            return await this.bucket.createFile(
-                conf.appWriteBucketId,
-                ID.unique(),
-                file
-            )
+            return await this.bucket.createFile({
+                bucketId: conf.appWriteBucketId,
+                fileId: ID.unique(),
+                file: file
+        })
         }catch(error){
             console.log("Appwrite service :: uploadFile ::error", error);
             return false;
@@ -123,10 +123,10 @@ export class Service{
     //delete file service
     async deleteFile(fileId){
         try{
-            await this.bucket.deleteFile(
-                conf.appWriteBucketId,
-                fileId
-            )
+            await this.bucket.deleteFile({
+               bucketId: conf.appWriteBucketId,
+               fileId: fileId
+        })
              return true;
         }catch(error){
             console.log("Appwrite service :: deleteFile :: error", error);
@@ -136,10 +136,10 @@ export class Service{
 
     //preview file service
     getFilePreview(fileId){
-        return this.bucket.getFilePreview(
-            conf.appWriteBucketId,
-            fileId
-        )
+        return this.bucket.getFileView({
+           bucketId: conf.appWriteBucketId,
+           fileId: fileId
+    })
 
     }
 }

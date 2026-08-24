@@ -10,7 +10,7 @@ function Login() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const { register, handleSubmit } = useForm()
-    const {error, setError} = useState("")
+    const [error, setError] = useState("")
 
     const login = async(data) => {
        setError("")
@@ -19,7 +19,7 @@ function Login() {
           if(session){
             const userData = await authService.getCurrentUser()
             if(userData){
-                dispatch(authLogin(userData));
+                dispatch(authLogin({userData}));
                 navigate("/");
             }
           }
