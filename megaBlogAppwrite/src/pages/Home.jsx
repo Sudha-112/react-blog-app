@@ -1,20 +1,23 @@
 import React, {useEffect, useState} from 'react'
 import appwriteService from "../appwrite/config";
-import {Container, PostCard} from '../components'
+import {Container, PostCard} from '../components';
+import { useDispatch, useSelector } from "react-redux";
+import { setPosts } from "../store/postSlice";
 
 function Home() {
-    const [posts, setPosts] = useState([]);
+    const dispatch = useDispatch();
+    const posts = useSelector((state) => state.posts.posts);
    
     useEffect(() => {
-        appwriteService.getPosts().then((posts) => {
-            if (posts) {
-                setPosts(posts.rows);
+        appwriteService.getPosts().then((res) => {
+            if (res) {
+                dispatch(setPosts(res.rows));
             }
         })
          .catch((error) => {
             console.log("Appwrite service :: getPosts :: error", error);
         });
-    }, []);
+    }, [dispatch]);
 
   
     if (posts.length === 0) {

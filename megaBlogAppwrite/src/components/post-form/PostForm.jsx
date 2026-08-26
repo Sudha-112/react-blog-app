@@ -2,12 +2,13 @@ import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Input, RTE, Select } from "..";
 import appwriteService from "../../appwrite/config";
+import { addPost, updatePost } from "../../store/postSlice";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function PostForm({ post }) {
     
-    const { register, handleSubmit, watch, setValue, control, getValues } = useForm({
+    const { register, handleSubmit, watch, setValue, control, getValues, formState: {errors}, } = useForm({
         defaultValues: {
             title: post?.title || "",
             slug: post?.$id || "",
@@ -16,6 +17,7 @@ export default function PostForm({ post }) {
         },
     });
 
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const userData = useSelector((state) => state.auth.userData);
 
@@ -33,6 +35,7 @@ export default function PostForm({ post }) {
             });
 
             if (dbPost) {
+                dispatch(updatePost(dbPost));
                 navigate(`/post/${dbPost.$id}`);
             }
         } 
@@ -46,6 +49,7 @@ export default function PostForm({ post }) {
                 const dbPost = await appwriteService.createPost({ ...data, userId: userData.$id });
 
                 if (dbPost) {
+                    dispatch(addPost(dbPost));
                     navigate(`/post/${dbPost.$id}`);
                 }
             }
@@ -80,8 +84,11 @@ export default function PostForm({ post }) {
                     label="Title :"
                     placeholder="Title"
                     className="mb-4"
-                    {...register("title", { required: true })}
+                    {...register("title", { required: "Title is required" })}
                 />
+                {errors.title && (
+                    <p className="text-red-500 text-sm -mt-3 mb-3">{errors.title.message}</p>)}
+
                 <Input
                     label="Slug :"
                     placeholder="Slug"

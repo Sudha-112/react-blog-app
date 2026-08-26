@@ -9,11 +9,14 @@ import { useForm } from "react-hook-form"
 function Login() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const { register, handleSubmit } = useForm()
+    const { register, handleSubmit, formState: { errors }} = useForm()
     const [error, setError] = useState("")
+    const [isLoading, setIsLoading] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
 
     const login = async(data) => {
        setError("")
+       setIsLoading(true)
        try{
           const session = await authService.login(data);
           if(session){
@@ -23,8 +26,10 @@ function Login() {
                 navigate("/");
             }
           }
-       }catch (error){
-            setError(error.message);
+       }catch (err){
+            setError(err?.message || "Something went wrong. Please try again");
+       } finally{
+        setIsLoading(false);
        }
     }
 
@@ -49,33 +54,61 @@ function Login() {
                         Sign Up
                     </Link>
         </p>
+
         {error && <p className="text-red-600 mt-8 text-center">{error}</p>}
+
         <form onSubmit={handleSubmit(login)} className='mt-8'>
             <div className='space-y-5'>
+                <div>
                 <Input
                 label="Email: "
                 placeholder="Enter your email"
                 type="email"
                 {...register("email", {
-                    required: true,
+                    required: "Email is required",
                     validate: {
-                        matchPattern: (value) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value) ||
-                        "Email address must be a valid address",
+                        matchPattern: (value) =>  /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(value.trim()) ||
+                                                  "Please enter a valid email address",
                     }
                 })}
                 />
+                
+                {errors.email && (
+                                <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                            )}
+
+                 </div>
+
+                 <div className="relative">
                 <Input
                 label="Password: "
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 {...register("password", {
-                    required: true,
+                    required: "Password is required",
                 })}
                 />
+
+                 <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute right-3 top-9 text-gray-500 text-sm"
+                    >
+                    {showPassword ? "Hide" : "Show"}
+                    </button>
+
+                {errors.password && (
+                                <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+                            )}
+                </div>
+
                 <Button
                 type="submit"
                 className="w-full"
-                >Sign in</Button>
+                disabled={isLoading}
+                >
+                {isLoading ? "Signing in..." : "Sign in"} 
+                    </Button>
             </div>
         </form>
         </div>

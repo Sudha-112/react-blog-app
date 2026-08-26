@@ -3,7 +3,7 @@ import {Client, Account, ID} from "appwrite";
 
 export class AuthService{
 
-    client = new Client();
+    client = new Client();  // makes connection with appwrite server
     account;
 
     constructor(){
@@ -16,7 +16,12 @@ export class AuthService{
     //signup
     async createAccount({email, password, name}){
         try{
-            const userAccount = await this.account.create(ID.unique(), email, password, name);
+            const userAccount = await this.account.create({
+               userId: ID.unique(),
+               email: email,
+               password: password,
+               name: name
+            });
 
             if(userAccount){
                // call another method
@@ -25,6 +30,7 @@ export class AuthService{
                 return userAccount;
             }
         }catch(error){
+           console.log("Appwrite service :: signup :: error" ,error);
            throw error;
         }
     }
@@ -32,8 +38,12 @@ export class AuthService{
     //login
     async login({email,password}){
         try{
-        return await this.account.createEmailPasswordSession(email, password);
+        return await this.account.createEmailPasswordSession({
+            email: email, 
+            password: password
+        });
         }catch(error){
+            console.log("Appwrite service :: login :: error" ,error);
             throw error;
         }
     }
@@ -54,8 +64,10 @@ export class AuthService{
 
     try{
         await this.account.deleteSessions();
+        return true;
     }catch(error){
         console.log("Appwrite service :: logout :: error", error);
+        return false;
     }
    }
 }

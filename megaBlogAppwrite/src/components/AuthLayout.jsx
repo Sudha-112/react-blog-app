@@ -24,12 +24,15 @@ export default function Protected({children, authentication = true}) {
             navigate("/login")
         } else if(!authentication && authStatus !== authentication){
             navigate("/")
-        }
+        }else{
         setLoader(false)
+        }
     }, [authStatus, navigate, authentication])
 
   return loader ? <h1>Loading...</h1> : <>{children}</>
 }  
 
+//authentication = login required hai
+// authStatus = check krta hai logged in hai ya nahi hai
 
  

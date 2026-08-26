@@ -8,7 +8,7 @@ import "./App.css"
 
 
 function App() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);  // only for check if there is any user logged-in or not
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -30,7 +30,7 @@ function App() {
     <div className="w-full block">
       <Header />
       <main>
-       TODO : <Outlet />
+        <Outlet />
       </main>
       <Footer />
     </div>

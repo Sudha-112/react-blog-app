@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import appwriteService from "../appwrite/config";
+import { removePost } from "../store/postSlice";
 import { Button, Container } from "../components";
 import parse from "html-react-parser";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Post() {
     const [post, setPost] = useState(null);
@@ -11,22 +12,30 @@ export default function Post() {
     const navigate = useNavigate();
 
     const userData = useSelector((state) => state.auth.userData);
-
+    const dispatch = useDispatch();
     const isAuthor = post && userData ? post.userId === userData.$id : false;
+    const postsFromStore = useSelector((state) => state.posts.posts);
 
     useEffect(() => {
-        if (slug) {
+    if (slug) {
+        const existingPost = postsFromStore.find((p) => p.$id === slug);
+        if (existingPost) {
+            setPost(existingPost);
+        } else {
             appwriteService.getPost(slug).then((post) => {
                 if (post) setPost(post);
                 else navigate("/");
             });
-        } else navigate("/");
-    }, [slug, navigate]);
+        }
+    } else navigate("/");
+}, [slug, navigate, postsFromStore]);
+  
 
     const deletePost = () => {
         appwriteService.deletePost(post.$id).then((status) => {
             if (status) {
                 appwriteService.deleteFile(post.featuredImage);
+                dispatch(removePost(post.$id));
                 navigate("/");
             }
         });

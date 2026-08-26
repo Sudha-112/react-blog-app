@@ -10,19 +10,24 @@ function Signup() {
     const navigate = useNavigate()
     const [error, setError] = useState("")
     const dispatch = useDispatch()
-    const {register, handleSubmit} = useForm()
+    const {register, handleSubmit, formState: { errors }} = useForm()
+    const [isLoading, setIsLoading] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
 
     const create = async(data) => {
         setError("")
+        setIsLoading(true)
         try {
-            const userData = await authService.createAccount(data)
-            if (userData) {
+            const account = await authService.createAccount(data)
+            if (account) {
                 const userData = await authService.getCurrentUser()
                 if(userData) dispatch(login({userData}));
                 navigate("/")
             }
-        } catch (error) {
-            setError(error.message)
+        } catch (err) {
+            setError(err?.message || "Something went wrong. Please try again")
+        }finally{
+            setIsLoading(false)
         }
     }
 
@@ -34,7 +39,7 @@ function Signup() {
                         <Logo width="100%" />
                     </span>
                 </div>
-                <h2 className="text-center text-2xl font-bold leading-tight">Sign up to create account</h2>
+                <h2 className="text-center text-2xl font-bold leading-tight">Sign up to create new account</h2>
                 <p className="mt-2 text-center text-base text-black/60">
                     Already have an account?&nbsp;
                     <Link
@@ -48,34 +53,69 @@ function Signup() {
 
                 <form onSubmit={handleSubmit(create)}>
                     <div className='space-y-5'>
+
+                        <div>
                         <Input
                         label="Full Name: "
                         placeholder="Enter your full name"
                         {...register("name", {
-                            required: true,
+                            required:"Name is required",
                         })}
                         />
+                        
+                       {errors.name && (
+                                <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+                            )}
+
+                        </div>
+
+                        <div>
                         <Input
                         label="Email: "
                         placeholder="Enter your email"
                         type="email"
                         {...register("email", {
-                            required: true,
+                            required: "Email is required",
                             validate: {
-                                matchPatern: (value) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value) ||
-                                "Email address must be a valid address",
+                               matchPattern: (value) =>  /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(value.trim()) ||
+                                                  "Please enter a valid email address",
                             }
                         })}
                         />
+
+                        {errors.email && (
+                                <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                            )}
+
+                      </div>
+
+                      <div className="relative">
                         <Input
                         label="Password: "
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         placeholder="Enter your password"
                         {...register("password", {
-                            required: true,})}
+                            required: "Password is required",})}
                         />
-                        <Button type="submit" className="w-full">
-                            Create Account
+
+                           <button
+                             type="button"
+                             onClick={() => setShowPassword((prev) => !prev)}
+                             className="absolute right-3 top-9 text-gray-500 text-sm"
+                    >
+                                 {showPassword ? "Hide" : "Show"}
+                            </button>
+
+                         {errors.password && (
+                                <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+                            )}   
+                        </div>
+
+                        <Button type="submit" 
+                        className="w-full"
+                        disabled={isLoading}
+                        >
+                           {isLoading ? "Creating Account..." : "Create Account"}
                         </Button>
                     </div>
                 </form>
