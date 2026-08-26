@@ -22,9 +22,11 @@ export default function PostForm({ post }) {
     const userData = useSelector((state) => state.auth.userData);
 
     const submit = async (data) => {
+         console.log("form data:", data);
+         console.log("image field:", data.image);
         if (post) {
             const file = data.image && data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null;
-
+            console.log("uploaded file:", file);
             if (file) {
                 appwriteService.deleteFile(post.featuredImage);
             }
