@@ -10,11 +10,13 @@ function Home() {
     
     const dispatch = useDispatch();
     const posts = useSelector((state) => state.posts.posts);
+    const authStatus = useSelector((state) => state.auth.status);
     const [currentPage, setCurrentPage] = useState(1);
 
+
     useEffect(() => {
-        if(posts.length === 0){
-        appwriteService.getPosts().then((res) => {
+        if(posts.length === 0 && authStatus){
+          appwriteService.getPosts().then((res) => {
             if (res) {
                 dispatch(setPosts(res.rows));
             }
@@ -30,21 +32,37 @@ function Home() {
     const paginatedPosts = posts.slice(startIndex, startIndex + POSTS_PER_PAGE);
 
   
-    if (posts.length === 0) {
+    if (posts.length === 0 && authStatus) {
         return (
             <div className="w-full py-8 mt-4 text-center">
                 <Container>
                     <div className="flex flex-wrap">
                         <div className="p-2 w-full">
                             <h1 className="text-2xl font-bold hover:text-gray-500">
-                               No posts available yet.
+                             No post available yet.
                             </h1>
                         </div>
                     </div>
                 </Container>
             </div>
         )
+    
     }
+    if(!authStatus){
+            return (
+            <div className="w-full py-8 mt-4 text-center">
+                <Container>
+                    <div className="flex flex-wrap">
+                        <div className="p-2 w-full">
+                            <h1 className="text-2xl font-bold hover:text-gray-500">
+                              Please, Login to read posts
+                            </h1>
+                        </div>
+                    </div>
+                </Container>
+            </div>
+        )
+}
     return (
         <div className='w-full py-8'>
             <Container>
