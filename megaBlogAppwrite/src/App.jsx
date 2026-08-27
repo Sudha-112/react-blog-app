@@ -8,7 +8,7 @@ import "./App.css"
 
 
 function App() {
-  const [loading, setLoading] = useState(true);  // only for check if there is any user logged-in or not
+  const [loading, setLoading] = useState(true);  // only for checking if there is any user logged-in or not
   const dispatch = useDispatch();
 
   useEffect(() => {
