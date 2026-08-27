@@ -25,3 +25,5 @@ npm run dev
 \`\`\`
 
 Create a `.env` file based on `.env.sample` and add your Appwrite credentials.
+
+🔗 **Live Demo:** https://react-appwrite-blog-six.vercel.app
