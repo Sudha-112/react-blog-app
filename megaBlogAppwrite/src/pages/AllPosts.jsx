@@ -4,7 +4,7 @@ import { Container, PostCard } from '../components'
 import appwriteService from "../appwrite/config";
 import { setPosts } from "../store/postSlice";
 
-const POSTS_PER_PAGE = 8;
+const POSTS_PER_PAGE = 4;
 
 function AllPosts() {
     const dispatch = useDispatch();
@@ -15,11 +15,13 @@ function AllPosts() {
     const [sortOption, setSortOption] = useState("newest");
 
     useEffect(() => {
+        if(posts.length === 0){
         appwriteService.getPosts([]).then((res) => {
             if (res) {
                 dispatch(setPosts(res.rows))
             }
         })
+    }
     }, [dispatch])
 
     const filteredPosts = posts.filter((post) =>

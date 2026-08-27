@@ -22,8 +22,7 @@ export default function PostForm({ post }) {
     const userData = useSelector((state) => state.auth.userData);
 
     const submit = async (data) => {
-         console.log("form data:", data);
-         console.log("image field:", data.image);
+        
         if (post) {
             const file = data.image && data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null;
             console.log("uploaded file:", file);
@@ -95,11 +94,12 @@ export default function PostForm({ post }) {
                     label="Slug :"
                     placeholder="Slug"
                     className="mb-4"
-                    {...register("slug", { required: true })}
-                    onInput={(e) => {
-                        setValue("slug", slugTransform(e.currentTarget.value), { shouldValidate: true });
-                    }}
+                    {...register("slug", { required: "Slug is required" })}
+                     readOnly
                 />
+                {errors.slug && (
+                    <p className="text-red-500 text-sm -mt-3 mb-3">{errors.slug.message}</p>)}
+                
                 <RTE label="Content :" name="content" control={control} defaultValue={getValues("content")} />
             </div>
             <div className="w-1/3 px-2">

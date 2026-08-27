@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Container, PostForm } from '../components'
 import appwriteService from "../appwrite/config";
 import { useNavigate, useParams } from 'react-router-dom';
-import { setPosts } from '../store/postSlice' // apna path check kar lena
+import { addPost } from '../store/postSlice';
 
 function EditPost() {
     const [post, setPost] = useState(null)
@@ -14,6 +14,7 @@ function EditPost() {
 
     useEffect(() => {
         if (slug) {
+            setPost(null);
             const existingPost = postsFromStore.find((p) => p.$id === slug)
             if (existingPost) {
                 setPost(existingPost)
@@ -21,15 +22,15 @@ function EditPost() {
                 appwriteService.getPost(slug).then((fetchedPost) => {
                     if (fetchedPost) {
                         setPost(fetchedPost)
-                        // agar direct URL se aaya hai to store bhi update kar do
-                        dispatch(setPosts([...postsFromStore, fetchedPost]))
+                        
+                        dispatch(addPost(fetchedPost))
                     }
                 })
             }
         } else {
             navigate('/')
         }
-    }, [slug, navigate])
+    }, [slug, navigate, dispatch, postsFromStore])
 
     return post ? (
         <div className='py-8'>
