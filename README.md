@@ -18,7 +18,9 @@ with support for image uploads and rich text formatting.
 
 ## Getting Started
 \`\`\`bash
+
 npm install
+
 npm run dev
 \`\`\`
 
