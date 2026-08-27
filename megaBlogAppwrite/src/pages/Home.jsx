@@ -25,7 +25,7 @@ function Home() {
             console.log("Appwrite service :: getPosts :: error", error);
         });
     }
-    }, [dispatch]);
+    }, [dispatch, authStatus]);
 
     const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
     const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
